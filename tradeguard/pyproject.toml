@@ -1,0 +1,21 @@
+[project]
+name = "tradeguard"
+version = "0.1.0"
+description = "Document intelligence + risk-gated escrow for cargo trade (portfolio project)"
+requires-python = ">=3.11"
+# Starting-point dependencies; pin versions once you choose them (see docs/03-TECH-STACK.md)
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]

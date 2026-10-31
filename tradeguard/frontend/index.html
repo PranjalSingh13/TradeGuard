@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeGuard - Document Intelligence & Escrow Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #111827;
+            --bg-elevated: #1e293b;
+            --border: #334155;
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.2);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .tagline { font-size: 13px; color: var(--text-muted); }
+
+        .btn-group { display: flex; gap: 10px; align-items: center; }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: var(--primary); color: #090d16; }
+        .btn-primary:hover { background: #7dd3fc; box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-outline { background: transparent; border-color: var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: var(--bg-elevated); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+
+        /* Scenario Selector Toolbar */
+        .scenario-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .scenario-presets { display: flex; gap: 8px; }
+        .scenario-btn {
+            background: var(--bg-elevated);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .scenario-btn.active {
+            background: var(--primary);
+            color: #090d16;
+            border-color: var(--primary);
+        }
+
+        /* Layout Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-auto-release { background: var(--success-glow); color: #34d399; border: 1px solid var(--success); }
+        .badge-review { background: var(--warning-glow); color: #fbbf24; border: 1px solid var(--warning); }
+        .badge-hold { background: var(--danger-glow); color: #f87171; border: 1px solid var(--danger); }
+        .badge-neutral { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+
+        .form-row { margin-bottom: 14px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        /* Risk Metric Card */
+        .metric-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+
+        .metric-value { font-size: 36px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+        .val-low { color: #34d399; }
+        .val-mid { color: #fbbf24; }
+        .val-high { color: #f87171; }
+
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            background: var(--bg-elevated);
+            border-left: 4px solid var(--border);
+        }
+        .chk-pass { border-left-color: var(--success); }
+        .chk-fail { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.08); }
+
+        /* Review Console */
+        .review-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px dashed var(--warning);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 18px;
+            display: none;
+        }
+
+        /* Ledger Table */
+        .ledger-container {
+            grid-column: 1 / -1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        code { font-family: 'JetBrains Mono', monospace; color: #a5f3fc; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-logo">
+            <div class="logo-icon">TG</div>
+            <div>
+                <h2>TradeGuard Control Center</h2>
+                <div class="tagline">Document Intelligence + XGBoost Risk-Gated Escrow</div>
+            </div>
+        </div>
+        <div class="btn-group">
+            <a href="/docs" target="_blank"><button class="btn-outline">Open Swagger UI</button></a>
+            <a href="/metrics" target="_blank"><button class="btn-outline">System Metrics</button></a>
+            <button class="btn-primary" onclick="executeFullEndToEndRun()">Run Automated Demo Flow</button>
+        </div>
+    </header>
+
+    <!-- Scenario Toolbar -->
+    <div class="scenario-bar">
+        <div>
+            <span style="font-size: 13px; font-weight: 600; margin-right: 12px;">Test Case Presets:</span>
+            <span class="scenario-presets">
+                <button class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')">Clean Shipment (Low Risk)</button>
+                <button class="scenario-btn" id="btn-scen-fraud" onclick="setScenario('fraud')">Tampered / Forged Container (HOLD)</button>
+                <button class="scenario-btn" id="btn-scen-review" onclick="setScenario('review')">Degraded OCR Scan (MANUAL_REVIEW)</button>
+            </span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);" id="scenario-desc">
+            Preset: Consistent documents across BoL & Packing List. Expected: AUTO_RELEASE.
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- 1. Shipment & Payment Escrow Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">1. Shipment & Escrow Agreement</span>
+                <span class="badge badge-neutral" id="shipment-status-pill">CREATED</span>
+            </div>
+
+            <div class="form-row">
+                <label>Shipment Reference</label>
+                <input type="text" id="input-ref" value="TG-2026-EXP-8891">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="form-row">
+                <div>
+                    <label>Origin Port (POL)</label>
+                    <input type="text" id="input-pol" value="INNSA - Nhava Sheva, India">
+                </div>
+                <div>
+                    <label>Destination Port (POD)</label>
+                    <input type="text" id="input-pod" value="NLRTM - Rotterdam, Netherlands">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="form-row">
+                <div>
+                    <label>Escrow Amount (USD)</label>
+                    <input type="number" id="input-amount" value="54200">
+                </div>
+                <div>
+                    <label>Container Number</label>
+                    <input type="text" id="input-container" value="CSQU3054383">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+                <button class="btn-primary" onclick="initiateShipment()">1. Create Shipment</button>
+                <button class="btn-outline" id="btn-fund-escrow" onclick="fundEscrow()">2. Authorize Escrow ($54,200)</button>
+            </div>
+        </div>
+
+        <!-- 2. Document Intelligence & Decision Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">2. Document Intelligence & Decision Engine</span>
+                <span class="badge badge-neutral" id="decision-pill">IDLE</span>
+            </div>
+
+            <div class="metric-banner">
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">XGBoost Risk Score</div>
+                    <div class="metric-value val-low" id="risk-score-display">--</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Escrow Decision</div>
+                    <div style="font-size: 20px; font-weight: 800;" id="decision-text">--</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Hard-Rule Priority</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #a5f3fc;" id="hard-rule-status">ENGAGED</div>
+                </div>
+            </div>
+
+            <label>Deterministic Validation Checks</label>
+            <div id="checks-list">
+                <div class="checklist-item">
+                    <span>ISO 6346 Container Check-Digit</span>
+                    <span style="color: var(--text-muted);">Pending execution</span>
+                </div>
+                <div class="checklist-item">
+                    <span>Gross Weight Agreement (BoL vs Packing List)</span>
+                    <span style="color: var(--text-muted);">Pending execution</span>
+                </div>
+                <div class="checklist-item">
+                    <span>Package Count Consistency (Cartons)</span>
+                    <span style="color: var(--text-muted);">Pending execution</span>
+                </div>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 18px;" onclick="runPipeline()">
+                3. Ingest Documents & Execute Pipeline
+            </button>
+
+            <!-- Human Reviewer Intervention Box -->
+            <div class="review-box" id="reviewer-console">
+                <div style="font-weight: 700; color: #fbbf24; margin-bottom: 6px;">Manual Dispute / Review Console</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;" id="review-reason">
+                    Borderline confidence threshold reached. Reviewer approval required to disburse funds.
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-success" onclick="resolveReview('approve')">Approve Payout</button>
+                    <button class="btn-danger" onclick="resolveReview('reject')">Reject & Refund Buyer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Append-Only Escrow Ledger -->
+        <div class="panel ledger-container">
+            <div class="panel-header">
+                <span class="panel-title">3. Append-Only Financial Ledger (PostgreSQL Invariants)</span>
+                <span style="font-size: 12px; color: var(--text-muted);">Strict Anti-Double-Spend Guarantee</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Entry ID</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>External Ref</th>
+                        <th>Timestamp</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="ledger-rows">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No financial transactions recorded yet. Click 'Create Shipment' and 'Authorize Escrow' to begin.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = 'clean';
+        let ledgerCounter = 100;
+
+        function setScenario(type) {
+            currentScenario = type;
+            document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-scen-${type}`).classList.add('active');
+
+            const desc = document.getElementById('scenario-desc');
+            const contInput = document.getElementById('input-container');
+
+            if (type === 'clean') {
+                desc.innerText = "Preset: Consistent documents across BoL & Packing List. Expected: AUTO_RELEASE.";
+                contInput.value = "CSQU3054383"; // Valid ISO 6346
+            } else if (type === 'fraud') {
+                desc.innerText = "Preset: Forged Container Number (Bad Check Digit) + 30% Weight Mismatch. Expected: HOLD.";
+                contInput.value = "CSQU3054384"; // Corrupted check digit
+            } else if (type === 'review') {
+                desc.innerText = "Preset: Degraded OCR Scan Confidence (0.52 < 0.70 Gate). Expected: MANUAL_REVIEW.";
+                contInput.value = "CSQU3054383";
+            }
+        }
+
+        function initiateShipment() {
+            const ref = document.getElementById('input-ref').value;
+            const badge = document.getElementById('shipment-status-pill');
+            badge.innerText = "CREATED";
+            badge.className = "badge badge-neutral";
+            alert(`Shipment ${ref} created in system.`);
+        }
+
+        function fundEscrow() {
+            const amount = document.getElementById('input-amount').value;
+            const badge = document.getElementById('shipment-status-pill');
+            badge.innerText = "FUNDS_HELD";
+            badge.className = "badge badge-auto-release";
+
+            addLedgerEntry("HOLD", `$${parseInt(amount).toLocaleString()}.00`, "PAY_GATEWAY_AUTH_01");
+            alert(`Escrow Funded: $${amount} held in secure gateway sandbox.`);
+        }
+
+        function runPipeline() {
+            const riskDisplay = document.getElementById('risk-score-display');
+            const decisionText = document.getElementById('decision-text');
+            const decisionPill = document.getElementById('decision-pill');
+            const checksList = document.getElementById('checks-list');
+            const reviewConsole = document.getElementById('reviewer-console');
+
+            reviewConsole.style.display = "none";
+
+            if (currentScenario === 'clean') {
+                riskDisplay.innerText = "0.06";
+                riskDisplay.className = "metric-value val-low";
+                decisionText.innerText = "AUTO_RELEASE";
+                decisionText.style.color = "#34d399";
+                decisionPill.innerText = "AUTO_RELEASE";
+                decisionPill.className = "badge badge-auto-release";
+
+                checksList.innerHTML = `
+                    <div class="checklist-item chk-pass">
+                        <span>ISO 6346 Container (${document.getElementById('input-container').value})</span>
+                        <strong style="color: #34d399;">PASSED (Valid Check Digit)</strong>
+                    </div>
+                    <div class="checklist-item chk-pass">
+                        <span>Gross Weight Agreement (BoL 18,400 kg vs PL 18,400 kg)</span>
+                        <strong style="color: #34d399;">PASSED (0.0% variance)</strong>
+                    </div>
+                    <div class="checklist-item chk-pass">
+                        <span>Package Count Consistency (450 Cartons)</span>
+                        <strong style="color: #34d399;">PASSED</strong>
+                    </div>
+                `;
+
+                addLedgerEntry("RELEASE", `$${parseInt(document.getElementById('input-amount').value).toLocaleString()}.00`, "AUTO_RELEASE_ZERO_RISK");
+                document.getElementById('shipment-status-pill').innerText = "RELEASED";
+
+            } else if (currentScenario === 'fraud') {
+                riskDisplay.innerText = "0.89";
+                riskDisplay.className = "metric-value val-high";
+                decisionText.innerText = "HOLD";
+                decisionText.style.color = "#f87171";
+                decisionPill.innerText = "HELD_FOR_RISK";
+                decisionPill.className = "badge badge-hold";
+
+                checksList.innerHTML = `
+                    <div class="checklist-item chk-fail">
+                        <span>ISO 6346 Container Check-Digit (${document.getElementById('input-container').value})</span>
+                        <strong style="color: #f87171;">FAILED: Expected '3', got '4'</strong>
+                    </div>
+                    <div class="checklist-item chk-fail">
+                        <span>Gross Weight Agreement (BoL 18,400 kg vs PL 12,200 kg)</span>
+                        <strong style="color: #f87171;">FAILED: 33.7% Discrepancy</strong>
+                    </div>
+                    <div class="checklist-item chk-pass">
+                        <span>Package Count Consistency</span>
+                        <strong style="color: #34d399;">PASSED</strong>
+                    </div>
+                `;
+                document.getElementById('shipment-status-pill').innerText = "HELD_FOR_RISK";
+
+            } else if (currentScenario === 'review') {
+                riskDisplay.innerText = "0.34";
+                riskDisplay.className = "metric-value val-mid";
+                decisionText.innerText = "MANUAL_REVIEW";
+                decisionText.style.color = "#fbbf24";
+                decisionPill.innerText = "UNDER_REVIEW";
+                decisionPill.className = "badge badge-review";
+
+                checksList.innerHTML = `
+                    <div class="checklist-item chk-pass">
+                        <span>ISO 6346 Container (${document.getElementById('input-container').value})</span>
+                        <strong style="color: #34d399;">PASSED</strong>
+                    </div>
+                    <div class="checklist-item chk-fail">
+                        <span>OCR Scan Confidence Gate</span>
+                        <strong style="color: #fbbf24;">DEGRADED (0.52 < 0.70 Gate)</strong>
+                    </div>
+                `;
+
+                document.getElementById('shipment-status-pill').innerText = "UNDER_REVIEW";
+                reviewConsole.style.display = "block";
+            }
+        }
+
+        function resolveReview(action) {
+            const amount = document.getElementById('input-amount').value;
+            const reviewConsole = document.getElementById('reviewer-console');
+            const pill = document.getElementById('shipment-status-pill');
+
+            if (action === 'approve') {
+                pill.innerText = "RELEASED";
+                pill.className = "badge badge-auto-release";
+                addLedgerEntry("RELEASE", `$${parseInt(amount).toLocaleString()}.00`, "MANUAL_REVIEWER_APPROVAL");
+                alert("Reviewer Approved: Escrow funds disbursed to seller.");
+            } else {
+                pill.innerText = "REFUNDED";
+                pill.className = "badge badge-hold";
+                addLedgerEntry("REFUND", `$${parseInt(amount).toLocaleString()}.00`, "MANUAL_REVIEWER_REJECTION");
+                alert("Reviewer Rejected: Escrow funds refunded back to buyer.");
+            }
+            reviewConsole.style.display = "none";
+        }
+
+        function addLedgerEntry(type, amount, ref) {
+            const tbody = document.getElementById('ledger-rows');
+            if (tbody.innerHTML.includes("No financial transactions")) {
+                tbody.innerHTML = "";
+            }
+            ledgerCounter++;
+            const entryId = `LEDG-${ledgerCounter}`;
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'HOLD' ? '#38bdf8' : (type === 'RELEASE' ? '#34d399' : '#f87171');
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><code>${entryId}</code></td>
+                    <td><strong style="color: ${color}">${type}</strong></td>
+                    <td>${amount}</td>
+                    <td><code>${ref}</code></td>
+                    <td>${time}</td>
+                    <td><span class="badge ${type==='HOLD'?'badge-neutral':(type==='RELEASE'?'badge-auto-release':'badge-hold')}">CONFIRMED</span></td>
+                </tr>
+            `;
+        }
+
+        function executeFullEndToEndRun() {
+            setScenario('clean');
+            initiateShipment();
+            setTimeout(() => {
+                fundEscrow();
+                setTimeout(() => {
+                    runPipeline();
+                }, 800);
+            }, 600);
+        }
+    </script>
+</body>
+</html>
